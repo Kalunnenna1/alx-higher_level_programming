@@ -29,7 +29,7 @@ Namespaces are one honking great idea -- let's do more of those!
 Pycodestyle
 Pycodestyle is now the new standard of Python style code
 
-Tasks
+**Tasks**
 0. Run Python file
 mandatory
 Score: 100.00% (Checks completed: 100.00%)
@@ -50,7 +50,6 @@ Repo:
 GitHub repository: alx-higher_level_programming
 Directory: 0x00-python-hello_world
 File: 0-run
-    
 1. Run inline
 mandatory
 Score: 100.00% (Checks completed: 100.00%)
@@ -67,7 +66,6 @@ Repo:
 GitHub repository: alx-higher_level_programming
 Directory: 0x00-python-hello_world
 File: 1-run_inline
-    
 2. Hello, print
 mandatory
 Score: 100.00% (Checks completed: 100.00%)
@@ -504,4 +502,6 @@ Repo:
 GitHub repository: alx-higher_level_programming
 Directory: 0x00-python-hello_world
 File: 102-magic_calculation.py
+    
+
     
