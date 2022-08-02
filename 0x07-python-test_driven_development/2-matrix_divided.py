@@ -1,36 +1,32 @@
 #!/usr/bin/python3
 """
-Divides all elements of a matrix.
+Task 1 - matrix_divided(matrix, div):
 """
 
 
 def matrix_divided(matrix, div):
-    """Divides all elements of a matrix by a given number.
-        matrix (list): A list of lists
-        div (int/float): The number of elements to divide each
-    Returns:
-        matrix: A list of new lists
+    """function that divide all the values of the matrix"""
+    err_msg = "matrix must be a matrix (list of lists) of integers/floats"
+    if matrix is None or len(matrix) == 0 or len(matrix[0]) == 0:
+        raise TypeError(err_msg)
+    """if len(matrix[0]) != len(matrix[1]):
+        raise TypeError("Each row of the matrix must have the same size")
     """
-    if not isinstance(matrix, list):
-        raise TypeError(
-            'matrix must be a matrix (list of lists) of integers/floats')
-
-    if not isinstance(div, (int, float)):
+    if type(div) != int and type(div) != float:
         raise TypeError("div must be a number")
-
     if div == 0:
         raise ZeroDivisionError("division by zero")
 
-    for row in matrix:
-        if not isinstance(row, list):
-            raise TypeError(
-                'matrix must be a matrix (list of lists) of integers/floats')
-        items_in_first_row = len(matrix[0])
-        if len(row) != items_in_first_row:
+    results_matrix = []
+    for listas in matrix:
+        if type(listas) != list:
+            raise TypeError(err_msg)
+        if len(listas) != len(matrix[0]):
             raise TypeError("Each row of the matrix must have the same size")
-        for items in row:
-            if not isinstance(items, (int, float)):
-                raise TypeError(
-                    'matrix must be a matrix (list of lists) of integers/floats')
-
-    return [list(map(lambda item: round((item / div), 2), row)) for row in matrix]
+        c_resList = []
+        for valor in listas:
+            if type(valor) != int and type(valor) != float:
+                raise TypeError(err_msg)
+            c_resList.append(round(valor/div, 2))
+        results_matrix.append(c_resList)
+    return results_matrix
