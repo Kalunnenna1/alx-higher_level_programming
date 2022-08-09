@@ -1,120 +1,175 @@
 #!/usr/bin/python3
 """
-Contains tests for Base class
+a module for base class
 """
 
-import unittest
-import inspect
-import pep8
 import json
-from models import base
-Base = base.Base
+import csv
+import turtle
 
 
-class TestBaseDocs(unittest.TestCase):
-    """Tests to check the documentation and style of Base class"""
+class Base:
+    """
+    Defining a base class module
+    """
+    __nb_objects = 0
+
+    def __init__(self, id=None):
+        """
+        a constructor function
+        """
+        if (id is not None):
+            self.id = id
+        else:
+            Base.__nb_objects += 1
+            self.id = Base.__nb_objects
+
+    @staticmethod
+    def to_json_string(list_dictionaries):
+        """
+        convert list of dictionaries to json string
+        :param list_dictionaries: list of dictionaries
+        :return: json string
+        """
+        if (list_dictionaries is None or list_dictionaries == []):
+            return "[]"
+        else:
+            return json.dumps(list_dictionaries)
+
     @classmethod
-    def setUpClass(cls):
-        """Set up for the doc tests"""
-        cls.base_funcs = inspect.getmembers(Base, inspect.isfunction)
+    def save_to_file(cls, list_objs):
+        """
+        save list of objects to file
+        :param list_objs: list of objects
+        """
+        filename = cls.__name__ + ".json"
 
-    def test_pep8_conformance_base(self):
-        """Test that models/base.py conforms to PEP8."""
-        pep8style = pep8.StyleGuide(quiet=True)
-        result = pep8style.check_files(['models/base.py'])
-        self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warnings).")
+        with open(filename, "w", encoding="utf-8") as file:
+            if (list_objs is None or len(list_objs) == 0):
+                file.write("[]")
+            else:
+                list_dict = [list.to_dictionary() for list in list_objs]
+                file.write(cls.to_json_string(list_dict))
 
-    def test_pep8_conformance_test_base(self):
-        """Test that tests/test_models/test_base.py conforms to PEP8."""
-        pep8style = pep8.StyleGuide(quiet=True)
-        result = pep8style.check_files(['tests/test_models/test_base.py'])
-        self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warnings).")
+    @staticmethod
+    def from_json_string(json_string):
+        """
+        load list of objects from json string
+        :param json_string: json string
+        :return: JSON string representation of list of objects
+        """
+        if (json_string is None or json_string == "[]"):
+            return []
+        else:
+            return json.loads(json_string)
 
-    def test_module_docstring(self):
-        """Tests for the module docstring"""
-        self.assertTrue(len(base.__doc__) >= 1)
+    @classmethod
+    def create(cls, **dictionary):
+        """
+        create new list of objects
+        :param dictionary: dict object
+        :return: list of objects
+        """
+        if dictionary and dictionary != {}:
+            if cls.__name__ == "Rectangle":
+                new_values = cls(1, 1)
+            else:
+                new_values = cls(1)
+            new_values.update(**dictionary)
+            return new_values
 
-    def test_class_docstring(self):
-        """Tests for the Base class docstring"""
-        self.assertTrue(len(Base.__doc__) >= 1)
+    @classmethod
+    def load_from_file(cls):
+        """
+        load list of objects from file
+        :return: list of objects
+        """
+        filename = str(cls.__name__) + ".json"
+        try:
+            with open(filename, "r") as jsonfile:
+                list_dicts = Base.from_json_string(jsonfile.read())
+                return [cls.create(**d) for d in list_dicts]
+        except IOError:
+            return []
 
-    def test_func_docstrings(self):
-        """Tests for the presence of docstrings in all functions"""
-        for func in self.base_funcs:
-            self.assertTrue(len(func[1].__doc__) >= 1)
+    @classmethod
+    def save_to_file_csv(cls, list_objs):
+        """
+        save list of objects to csv file
+        :param list_objs: list of objects
+        :return:
+        """
+        filename = str(cls.__name__) + ".csv"
 
+        with open(filename, "w", newline="") as csvfile:
+            if list_objs is None or list_objs == []:
+                csvfile.write("[]")
+            else:
+                if cls.__name__ == "Rectangle":
+                    fieldnames = ["id", "width", "height", "x", "y"]
+                else:
+                    fieldnames = ["id", "size", "x", "y"]
 
-class TestBase(unittest.TestCase):
-    """Tests to check functionality of Base class"""
-    def test_too_many_args(self):
-        """test too many args to init"""
-        with self.assertRaises(TypeError):
-            b = Base(1, 1)
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                for obj in list_objs:
+                    writer.writerow(obj.to_dictionary())
 
-    def test_no_id(self):
-        """Tests id as None"""
-        b = Base()
-        self.assertEqual(b.id, 1)
+    @classmethod
+    def load_from_file_csv(cls):
+        """
+        load list of objects from csv file
+        :return:
+        """
+        filename = str(cls.__name__) + ".csv"
+        try:
+            with open(filename, "r", newline="") as csvfile:
+                if cls.__name__ == "Rectangle":
+                    fieldnames = ["id", "width", "height", "x", "y"]
+                else:
+                    fieldnames = ["id", "size", "x", "y"]
+                list_dicts = csv.DictReader(csvfile, fieldnames=fieldnames)
+                list_dicts = [dict([k, int(v)] for k, v in d.items())
+                              for d in list_dicts]
+                return [cls.create(**d) for d in list_dicts]
+        except IOError:
+            return []
 
-    def test_id_set(self):
-        """Tests id as not None"""
-        b98 = Base(98)
-        self.assertEqual(b98.id, 98)
+    @staticmethod
+    def draw(list_rectangles, list_squares):
+        """
+        draw list of rectangles and list of squares
+        :param list_rectangles: list of rectangles
+        :param list_squares: list of squares
+        """
+        turt_tle = turtle.Turtle()
+        turt_tle.screen.bgcolor("#b7312c")
+        turt_tle.pensize(3)
+        turt_tle.shape("turtle")
 
-    def test_no_id_after_set(self):
-        """Tests id as None after not None"""
-        b2 = Base()
-        self.assertEqual(b2.id, 2)
+        turt_tle.color("#ffffff")
+        for rect in list_rectangles:
+            turt_tle.showturtle()
+            turt_tle.up()
+            turt_tle.goto(rect.x, rect.y)
+            turt_tle.down()
+            for i in range(2):
+                turt_tle.forward(rect.width)
+                turt_tle.left(90)
+                turt_tle.forward(rect.height)
+                turt_tle.left(90)
+            turt_tle.hideturtle()
 
-    def test_nb_private(self):
-        """Tests nb_objects as a private instance attribute"""
-        b = Base(3)
-        with self.assertRaises(AttributeError):
-            print(b.nb_objects)
-        with self.assertRaises(AttributeError):
-            print(b.__nb_objects)
+        turt_tle.color("#b5e3d8")
+        for sq in list_squares:
+            turt_tle.showturtle()
+            turt_tle.up()
+            turt_tle.goto(sq.x, sq.y)
+            turt_tle.down()
+            for i in range(2):
+                turt_tle.forward(sq.width)
+                turt_tle.left(90)
+                turt_tle.forward(sq.height)
+                turt_tle.left(90)
+            turt_tle.hideturtle()
 
-    def test_to_json_string(self):
-        """Tests regular to json string"""
-        Base._Base__nb_objects = 0
-        d1 = {"id": 9, "width": 5, "height": 6, "x": 7, "y": 8}
-        d2 = {"id": 2, "width": 2, "height": 3, "x": 4, "y": 0}
-        json_s = Base.to_json_string([d1, d2])
-        self.assertTrue(type(json_s) is str)
-        d = json.loads(json_s)
-        self.assertEqual(d, [d1, d2])
-
-    def test_empty_to_json_string(self):
-        """Test for passing empty list/ None"""
-        json_s = Base.to_json_string([])
-        self.assertTrue(type(json_s) is str)
-        self.assertEqual(json_s, "[]")
-
-    def test_None_to_json_String(self):
-        json_s = Base.to_json_string(None)
-        self.assertTrue(type(json_s) is str)
-        self.assertEqual(json_s, "[]")
-
-    def test_from_json_string(self):
-        """Tests regular from_json_string"""
-        json_str = '[{"id": 9, "width": 5, "height": 6, "x": 7, "y": 8}, \
-{"id": 2, "width": 2, "height": 3, "x": 4, "y": 0}]'
-        json_l = Base.from_json_string(json_str)
-        self.assertTrue(type(json_l) is list)
-        self.assertEqual(len(json_l), 2)
-        self.assertTrue(type(json_l[0]) is dict)
-        self.assertTrue(type(json_l[1]) is dict)
-        self.assertEqual(json_l[0],
-                         {"id": 9, "width": 5, "height": 6, "x": 7, "y": 8})
-        self.assertEqual(json_l[1],
-                         {"id": 2, "width": 2, "height": 3, "x": 4, "y": 0})
-
-    def test_fjs_empty(self):
-        """Tests from_json_string with an empty string"""
-        self.assertEqual([], Base.from_json_string(""))
-
-    def test_fjs_None(self):
-        """Tests from_json_string with an empty string"""
-        self.assertEqual([], Base.from_json_string(None))
+        turtle.exitonclick()
